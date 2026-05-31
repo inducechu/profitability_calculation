@@ -9,6 +9,7 @@ spring:
       - "optional:classpath:eureka-client.yaml"
       - "optional:classpath:grpc-client.yaml"
       - "optional:classpath:spring-doc.yaml"
+      - "optional:classpath:kafka-producer.yaml"
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/profitability_cbr}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -24,4 +25,4 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   grpc:
     server:
-      port: 9092
+      port: 9095

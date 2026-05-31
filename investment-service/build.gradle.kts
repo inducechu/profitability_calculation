@@ -32,6 +32,9 @@ dependencies {
     implementation(libs.spring.grpc.client.starter)
     implementation(libs.spring.boot.starter.data.redis)
     implementation(libs.spring.boot.starter.cache)
+    // Kafka
+    implementation(libs.spring.boot.starter.kafka)
+
 
     // gRPC Client & Proto
     implementation(libs.grpc.netty.shaded)

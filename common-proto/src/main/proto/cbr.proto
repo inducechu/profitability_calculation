@@ -3,8 +3,7 @@ syntax = "proto3";
 package cbr;
 
 option java_multiple_files = true;
-option java_package = "com.induce.cbrservice.grpc";
-
+option java_package = "com.induce.common.proto.cbr";
 
 service CbrGrpcService {
   rpc GetInflationRate (InflationRequest) returns (InflationResponse);
@@ -15,4 +14,11 @@ message InflationRequest {
 
 message InflationResponse {
   string inflation_rate = 1;
+}
+
+message MacroIndicatorsProtoEvent {
+  string record_date = 1;
+  double key_rate = 2;
+  double inflation_value = 3;
+  double target_value = 4;
 }

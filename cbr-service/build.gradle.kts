@@ -30,6 +30,8 @@ dependencies {
     implementation(libs.spring.boot.starter.data.jpa)
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.grpc.server.starter)
+    // Kafka
+    implementation(libs.spring.boot.starter.kafka)
 
     // gRPC
     implementation(libs.grpc.services)

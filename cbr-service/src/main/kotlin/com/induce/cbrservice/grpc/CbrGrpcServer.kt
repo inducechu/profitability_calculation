@@ -1,6 +1,9 @@
 package com.induce.cbrservice.grpc
 
 import com.induce.cbrservice.repository.MacroIndicatorRepository
+import com.induce.common.proto.cbr.CbrGrpcServiceGrpc
+import com.induce.common.proto.cbr.InflationRequest
+import com.induce.common.proto.cbr.InflationResponse
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import org.springframework.stereotype.Service

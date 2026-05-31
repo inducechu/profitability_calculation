@@ -30,6 +30,8 @@ spring-grpc-server-starter = { group = "org.springframework.grpc", name = "sprin
 spring-grpc-client-starter = { group = "org.springframework.grpc", name = "spring-grpc-client-spring-boot-starter" }
 spring-boot-starter-cache = { group = "org.springframework.boot", name = "spring-boot-starter-cache" }
 spring-boot-starter-data-redis = { group = "org.springframework.boot", name = "spring-boot-starter-data-redis" }
+spring-boot-starter-kafka = { group = "org.springframework.boot", name = "spring-boot-starter-kafka" }
+
 # Gateway
 spring-cloud-starter-gateway-server-webflux = { group = "org.springframework.cloud", name = "spring-cloud-starter-gateway-server-webflux" }
 

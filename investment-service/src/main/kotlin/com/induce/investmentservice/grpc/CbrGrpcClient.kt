@@ -1,7 +1,7 @@
 package com.induce.investmentservice.grpc
 
-import com.induce.cbrservice.grpc.CbrGrpcServiceGrpc
-import com.induce.cbrservice.grpc.InflationRequest
+import com.induce.common.proto.cbr.CbrGrpcServiceGrpc
+import com.induce.common.proto.cbr.InflationRequest
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service

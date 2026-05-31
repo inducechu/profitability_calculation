@@ -10,6 +10,7 @@ spring:
       - "optional:classpath:spring-doc.yaml"
       - "optional:classpath:grpc-client.yaml"
       - "optional:classpath:redis.yaml"
+      - "optional:classpath:kafka-consumer.yaml"
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/profitability_investment}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
@@ -23,10 +24,3 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
-  instance:
-    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:true}

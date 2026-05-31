@@ -7,8 +7,10 @@ import com.induce.cbrservice.dto.MacroIndicatorRecord
 import com.induce.cbrservice.dto.MacroIndicatorResponse
 import com.induce.cbrservice.dto.toResponse
 import com.induce.cbrservice.exception.InvalidPeriodException
+import com.induce.cbrservice.kafka.CbrEventProducer
 import com.induce.cbrservice.model.MacroIndicator
 import com.induce.cbrservice.repository.MacroIndicatorRepository
+import com.induce.common.proto.cbr.MacroIndicatorsProtoEvent
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -23,7 +25,8 @@ import java.time.format.DateTimeFormatter
 class CbrService(
     private val repository: MacroIndicatorRepository,
     private val restTemplate: RestTemplate,
-    private val cbrInflationXmlUrl: String
+    private val cbrInflationXmlUrl: String,
+    private val cbrEventProducer: CbrEventProducer
 ) {
     private val xmlMapper = XmlMapper().registerKotlinModule()
     private val cbrDateFormatter = DateTimeFormatter.ofPattern("MM.yyyy")
@@ -46,7 +49,6 @@ class CbrService(
         return entities.map { it.toResponse() }
     }
 
-    @Transactional
     fun refreshMacroIndicators(dateFrom: LocalDate, dateTo: LocalDate) {
         val now = LocalDate.now()
 
@@ -75,7 +77,18 @@ class CbrService(
                 return
             }
 
-            saveNewRecords(records)
+            val savedEntities = saveNewRecords(records)
+
+            savedEntities.forEach { entity ->
+                val protoEvent = MacroIndicatorsProtoEvent.newBuilder()
+                    .setRecordDate(entity.recordDate.toString())
+                    .setKeyRate(entity.keyRate)
+                    .setInflationValue(entity.inflationValue)
+                    .setTargetValue(entity.targetValue)
+                    .build()
+
+                cbrEventProducer.sendIndicatorsUpdated(protoEvent)
+            }
         } catch (e: Exception) {
             throw RuntimeException("Ошибка при обработке данных ЦБ: ${e.message}")
         }
@@ -117,7 +130,8 @@ class CbrService(
         return xmlMapper.readValue(resultXml, MacroIndicatorData::class.java).records
     }
 
-    private fun saveNewRecords(records: List<MacroIndicatorRecord>) {
+    @Transactional
+    internal fun saveNewRecords(records: List<MacroIndicatorRecord>): List<MacroIndicator> {
         val entitiesToSave = records.mapNotNull { record ->
             val recordDate = YearMonth.parse(record.date, cbrDateFormatter).atDay(1)
 
@@ -133,11 +147,13 @@ class CbrService(
             }
         }
 
-        if (entitiesToSave.isNotEmpty()) {
-            repository.saveAll(entitiesToSave)
-            println("БД обновлена. Добавлено записей: ${entitiesToSave.size}")
+        return if (entitiesToSave.isNotEmpty()) {
+            val saved = repository.saveAll(entitiesToSave)
+            println("БД обновлена. Добавлено записей: ${saved.size}")
+            saved
         } else {
             println("Новых данных для сохранения не обнаружено.")
+            emptyList()
         }
     }
 }

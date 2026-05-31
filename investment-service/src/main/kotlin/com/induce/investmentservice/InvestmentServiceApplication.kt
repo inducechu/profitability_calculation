@@ -1,6 +1,6 @@
 package com.induce.investmentservice
 
-import com.induce.cbrservice.grpc.CbrGrpcServiceGrpc
+import com.induce.common.proto.cbr.CbrGrpcServiceGrpc
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
