@@ -31,26 +31,34 @@ services:
       timeout: 3s
       retries: 3
 
-  # Kafka
   kafka:
     image: apache/kafka:3.7.1
     container_name: profitability-kafka
     restart: unless-stopped
     environment:
-      - KAFKA_NODE_ID=1
-      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
-      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
-      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
-      - KAFKA_PROCESS_ROLES=broker,controller
-      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@profitability-kafka:9093
-      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://profitability-kafka:9092
-      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_LOG_DIRS=/var/lib/kafka/data
+      KAFKA_NODE_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@profitability-kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://profitability-kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    volumes:
+      - kafka-data:/var/lib/kafka/data
     networks:
       - profitability-backend
+    healthcheck:
+      test: ['CMD-SHELL', '/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1']
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
 
 
   eureka-server:
@@ -117,7 +125,7 @@ services:
       redis:
         condition: service_healthy
       kafka:
-        condition: service_started
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/profitability_investment
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
@@ -140,7 +148,7 @@ services:
       eureka-server:
         condition: service_healthy
       kafka:
-        condition: service_started
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/profitability_cbr
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
@@ -158,3 +166,4 @@ networks:
 volumes:
   postgres-data:
   redis-data:
+  kafka-data:

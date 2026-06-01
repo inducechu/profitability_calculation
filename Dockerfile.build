@@ -10,6 +10,4 @@ RUN gradle \
   :auth-service:bootJar \
   :investment-service:bootJar \
   :cbr-service:bootJar \
-  :kafka:bootJar \
-  :redis:bootJar \
   -x test --no-daemon --build-cache
