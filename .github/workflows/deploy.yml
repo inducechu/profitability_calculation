@@ -66,6 +66,11 @@ jobs:
             image: profitability-investment
           - module: cbr-service
             image: profitability-cbr
+          - module: kafka
+            image: profitability-kafka
+          - module: redis
+            image: profitability-redis
+
     steps:
       - uses: actions/checkout@v4
 
@@ -115,6 +120,6 @@ jobs:
             export IMAGE_REGISTRY
             export IMAGE_TAG
             docker compose -f docker-compose.prod.yml --env-file .env.prod pull
-            for service in eureka-server auth-service investment-service cbr-service gateway-service; do
+            for service in eureka-server auth-service investment-service cbr-service gateway-service kafka redis; do
               docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --no-deps "$service"
             done
